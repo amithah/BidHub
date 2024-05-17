@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { login } from "./feature/auth/authSlice";
+import { loginAsync } from "./feature/auth/authSlice";
 import { useNavigate } from "react-router-dom";
 
 export function Login() {
@@ -12,14 +12,13 @@ export function Login() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate("/home");
+      navigate("/add-item");
     }
-
   }, []);
 
   const handleLogin = (e) => {
     e.preventDefault();
-    dispatch(login({ email, password }));
+    dispatch(loginAsync({ "username":email, password }));
     navigate("/add-item");
   };
   return (
