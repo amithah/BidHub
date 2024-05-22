@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import useApi from "../../hooks/useApi";
+import axios from "axios";
 
 const initialState = {
   items: [],
@@ -59,6 +60,30 @@ export const addItem = (data) => async (dispatch) => {
   } catch (err) {
     dispatch(addItemFailure());
     console.log(err);
+  }
+};
+export const uploadToS3 = async (file, fileName, contentType = "image/*") => {
+  try {
+   
+    const uploadData = {
+      action: `putObject`,
+      fileName:file.name,
+      // ResponseContentType:"image"
+    };
+
+    const resp = await axios.post(`http://localhost:3000/upload`, uploadData);
+    const s3url = resp.data.data.url;
+
+    if (s3url) {
+      const myHeaders = new Headers({
+        "Content-Type": contentType,
+      });
+      await axios.put(s3url, file, { myHeaders });
+      return s3url;
+    }
+  } catch (err) {
+
+    return null;
   }
 };
 

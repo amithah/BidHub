@@ -12,14 +12,14 @@ export function Login() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate("/add-item");
+      navigate("/home");
     }
   }, []);
 
   const handleLogin = (e) => {
     e.preventDefault();
     dispatch(loginAsync({ "username":email, password }));
-    navigate("/add-item");
+    navigate("/home");
   };
   return (
     <>

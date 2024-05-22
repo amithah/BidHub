@@ -1,4 +1,4 @@
-// import Header from './Header';
+import Header from './Header';
 import Loader from './Loader';
 
 import { Outlet, useNavigation } from 'react-router-dom';
@@ -9,8 +9,11 @@ function AppLayout() {
 
   return (
     <>
+        <div className="bg-white">
       {isLoading && <Loader />}
+      <Header/>
       <Outlet />
+      </div>
     </>
   );
 }

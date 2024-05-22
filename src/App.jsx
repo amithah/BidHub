@@ -4,9 +4,11 @@ import ErrorPage from "./error-page";
 import { Login } from "./Login";
 
 import AppLayout from "./ui/AppLayout";
-import  Home  from "./Home";
+import Home from "./Home";
 import { AddItem } from "./AddItem";
 import { ListItems } from "./ListItems";
+import { ListAuctions } from "./ListAuctions";
+import { Auction } from "./Auction";
 
 const router = createBrowserRouter([
   {
@@ -27,6 +29,10 @@ const router = createBrowserRouter([
         element: <AddItem />,
       },
       { path: "/items", element: <ListItems /> },
+
+      { path: "/auctions", element: <ListAuctions /> },
+      { path: "/auction/:id", element: <Auction /> },
+
     ],
   },
 ]);

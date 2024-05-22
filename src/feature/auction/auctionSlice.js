@@ -31,6 +31,9 @@ const auctionSlice = createSlice({
     listAuctionsFailure: (state) => {
       state.isLoading = false;
     },
+    setAuction: (state,action) => {
+      state.auction = action.payload;
+    },
   },
 });
 
@@ -41,6 +44,7 @@ export const {
   listAuctionsStart,
   listAuctionsSuccess,
   listAuctionsFailure,
+  setAuction
 } = auctionSlice.actions;
 
 export const addAuction = (data) => async (dispatch) => {
