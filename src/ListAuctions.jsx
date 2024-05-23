@@ -3,9 +3,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { listAuctions } from "./feature/auction/auctionSlice";
 import Modal from "./ui/Modal";
 import AuctionCard from "./ui/AuctionCard";
+import Loader from "./ui/Loader";
 
 export function ListAuctions() {
-  const { loading, auctions } = useSelector((state) => state?.auctions);
+  const { isLoading, auctions } = useSelector((state) => state?.auctions);
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
 
@@ -22,7 +23,9 @@ export function ListAuctions() {
           </h2>
 
           <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-            {!loading &&
+            {isLoading ? (
+              <Loader/>
+            ) :
               auctions?.length > 0 &&
               auctions?.map((auction) => (
                 <AuctionCard key={auction._id} auction={auction} />

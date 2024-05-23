@@ -31,8 +31,18 @@ const auctionSlice = createSlice({
     listAuctionsFailure: (state) => {
       state.isLoading = false;
     },
-    setAuction: (state,action) => {
-      state.auction = action.payload;
+    setAuction: (state, action) => {
+      state.auction = action?.payload;
+    },
+    fetchAuctionStart: (state) => {
+      state.isLoading = true;
+    },
+    fetchAuctionSuccess: (state, action) => {
+      state.isLoading = false;
+      state.auction = action.payload.data;
+    },
+    fetchAuctionFailure: (state) => {
+      state.isLoading = false;
     },
   },
 });
@@ -44,17 +54,24 @@ export const {
   listAuctionsStart,
   listAuctionsSuccess,
   listAuctionsFailure,
-  setAuction
+  setAuction,
+  fetchAuctionStart,
+  fetchAuctionSuccess,
+  fetchAuctionFailure,
 } = auctionSlice.actions;
 
 export const addAuction = (data) => async (dispatch) => {
   const { fetchDataWithHeaders } = useApi();
   try {
     dispatch(addAuctionStart());
-    const auction = await fetchDataWithHeaders("/auction", JSON.stringify(data), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-    });
+    const auction = await fetchDataWithHeaders(
+      "/auction",
+      JSON.stringify(data),
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      }
+    );
     dispatch(addAuctionSuccess(auction));
   } catch (err) {
     dispatch(addAuctionFailure());
@@ -72,6 +89,19 @@ export const listAuctions = () => async (dispatch) => {
     dispatch(listAuctionsSuccess(auctions));
   } catch (err) {
     dispatch(listAuctionsFailure());
+    console.log(err);
+  }
+};
+export const fetchAuction = (id) => async (dispatch) => {
+  const { fetchDataWithHeaders } = useApi();
+  try {
+    dispatch(fetchAuctionStart());
+    const auction = await fetchDataWithHeaders(`/auction/${id}`, {
+      method: "GET",
+    });
+    dispatch(fetchAuctionSuccess(auction));
+  } catch (err) {
+    dispatch(fetchAuctionFailure());
     console.log(err);
   }
 };

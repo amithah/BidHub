@@ -181,11 +181,11 @@ function Header() {
                   {/* Logo (lg+) */}
                   <div className="hidden lg:flex lg:items-center">
                     <a href="/home">
-                      <span className="sr-only">Your Company</span>
+                      <span className="sr-only">Bid Hub</span>
                       <img
                         className="h-8 w-auto"
-                        src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-                        alt=""
+                        src="/bidbub-logo.png"
+                        alt="Bid Hub"
                       />
                     </a>
                   </div>
@@ -229,10 +229,10 @@ function Header() {
 
                   {/* Logo (lg-) */}
                   <a href="#" className="lg:hidden">
-                    <span className="sr-only">Your Company</span>
+                    <span className="sr-only">Bid Hub</span>
                     <img
-                      src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-                      alt=""
+                    src="/bidbub-logo.png"
+                      alt="Bid Hub"
                       className="h-8 w-auto"
                     />
                   </a>
@@ -253,6 +253,17 @@ function Header() {
                             <UserIcon className="h-6 w-6" aria-hidden="true" />
                           </a>
                         </div>
+                        <div className="flow-root" onClick={ ()=>
+                  {
+                    dispatch(logout());
+                    setMobileMenuOpen(false)
+                    navigate("/");
+                  }
+                    }>
+                    <p  className="-m-2 block p-2 font-medium text-gray-900 cursor-pointer">
+                      Sign out
+                    </p>
+                  </div>
                       </div>
 
                       {/* <span className="mx-4 h-6 w-px bg-gray-200 lg:mx-6" aria-hidden="true" /> */}

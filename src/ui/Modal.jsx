@@ -14,7 +14,7 @@ export default function Modal({ open, setOpen }) {
   const { loading, item } = useSelector((state) => state.items);
   const [price, setPrice] = useState("");
   const [reservePrice, setReservePrice] = useState("");
-  const [startTime, setStartTime] = useState(new Date().getTime());
+  const [startTime, setStartTime] = useState(new Date().getTime()+ 10 * 60 * 1000);
   const [error, setError] = useState("");
   const [duration, setDuration] = useState("600000");
 
@@ -60,7 +60,7 @@ export default function Modal({ open, setOpen }) {
     setPrice("");
     setReservePrice("");
     setDuration("");
-    setStartTime(new Date().getTime());
+    setStartTime(new Date().getTime()+ 10 * 60 * 1000);
   };
 
   return (
@@ -111,7 +111,7 @@ export default function Modal({ open, setOpen }) {
                           onChange={(e) => setDuration(e.target.value)}
                           id="duration"
                           name="duration"
-                          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                          className="block w-full p-2 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                         >
                           <option value="600000">10 Minutes</option>
                           <option value="1200000">20 Minutes</option>
@@ -133,7 +133,7 @@ export default function Modal({ open, setOpen }) {
                           type="text"
                           id="price"
                           placeholder="Initial Price"
-                          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                          className="block w-full p-2 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                         />
                       </div>
 
@@ -152,7 +152,7 @@ export default function Modal({ open, setOpen }) {
                           type="number"
                           id="reservePrice"
                           placeholder="Reserve Price"
-                          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                          className="block w-full p-2 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                         />
                       </div>
 
@@ -171,7 +171,7 @@ export default function Modal({ open, setOpen }) {
                             renderInput={(params) => (
                               <input
                                 {...params.inputProps}
-                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                className="block w-full p-2 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                               />
                             )}
                           />

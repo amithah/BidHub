@@ -12,14 +12,14 @@ import { Auction } from "./Auction";
 
 const router = createBrowserRouter([
   {
+    path: "/",
+    element: <Login />,
+  },
+  {
     element: <AppLayout />,
     errorElement: <ErrorPage />,
 
     children: [
-      {
-        path: "/",
-        element: <Login />,
-      },
       {
         path: "/home",
         element: <Home />,

@@ -1,8 +1,10 @@
 function Loader() {
   return (
-    <div className="absolute inset-0 flex items-center justify-center bg-slate-200/20 backdrop-blur-sm">
-      <div className="loader"></div>
+    <div className="flex justify-center items-center py-3">
+      <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-700" />
     </div>
+    
+
   );
 }
 

@@ -195,7 +195,7 @@ export default function Home() {
           <div className="py-10 md:flex md:items-center md:justify-between">
             <div className="text-center md:text-left">
               <p className="text-sm text-gray-500">
-                &copy; 2021 All Rights Reserved
+                &copy; 2024 All Rights Reserved
               </p>
             </div>
 
@@ -212,7 +212,7 @@ export default function Home() {
                 ))}
               </div>
 
-              <div className="ml-6 border-l border-gray-200 pl-6">
+              {/* <div className="ml-6 border-l border-gray-200 pl-6">
                 <a
                   href="#"
                   className="flex items-center text-gray-500 hover:text-gray-600"
@@ -225,7 +225,7 @@ export default function Home() {
                   <span className="ml-3 text-sm">Change</span>
                   <span className="sr-only">location and currency</span>
                 </a>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
