@@ -9,11 +9,16 @@ import { AddItem } from "./AddItem";
 import { ListItems } from "./ListItems";
 import { ListAuctions } from "./ListAuctions";
 import { Auction } from "./Auction";
+import { Register } from "./Register";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Login />,
+  },
+  {
+    path: "register",
+    element: <Register />,
   },
   {
     element: <AppLayout />,

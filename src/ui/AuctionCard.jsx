@@ -54,7 +54,7 @@ const AuctionCard = ({ auction }) => {
     <>
       <div
         key={auction._id}
-        className="group relative"
+        className="group relative cursor-pointer"
         onClick={() => {
           navigate(`/auction/${auction?._id}`);
         }}

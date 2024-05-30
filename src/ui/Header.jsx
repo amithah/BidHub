@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Fragment, useState } from 'react'
 import { Dialog, Popover, Tab, Transition } from '@headlessui/react'
 import { Bars3Icon, MagnifyingGlassIcon, ShoppingCartIcon, UserIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../feature/auth/authSlice';
 
 const navigation = {
@@ -77,7 +77,7 @@ function Header() {
   const dispatch = useDispatch();
   const navigate =useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-
+  const {isLoading,error, isAuthenticated } = useSelector((state) => state.auth);
   return (
   //   <header className="flex items-center justify-between border-b border-stone-200 bg-yellow-400 px-4 py-3 uppercase sm:px-6">
   //     <Link to="/" className="tracking-widest">
@@ -146,6 +146,7 @@ function Header() {
                       Sign in
                     </a>
                   </div>
+                  {isAuthenticated ?
                   <div className="flow-root" onClick={ ()=>
                   {
                     dispatch(logout());
@@ -157,6 +158,9 @@ function Header() {
                       Sign out
                     </p>
                   </div>
+                  :
+                     null
+                  }
                 </div>
 
                 <div className="space-y-6 border-t border-gray-200 px-4 py-6">
@@ -253,6 +257,7 @@ function Header() {
                             <UserIcon className="h-6 w-6" aria-hidden="true" />
                           </a>
                         </div>
+                        {isAuthenticated?
                         <div className="flow-root" onClick={ ()=>
                   {
                     dispatch(logout());
@@ -264,6 +269,18 @@ function Header() {
                       Sign out
                     </p>
                   </div>
+                  :
+                  <div className="flow-root" onClick={ ()=>
+                    {
+                     
+                      navigate("/");
+                    }
+                      }>
+                      <p  className="-m-2 block p-2 font-medium text-gray-900 cursor-pointer">
+                        Sign-in
+                      </p>
+                    </div>
+                  }
                       </div>
 
                       {/* <span className="mx-4 h-6 w-px bg-gray-200 lg:mx-6" aria-hidden="true" /> */}

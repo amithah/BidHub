@@ -71,7 +71,7 @@ export const uploadToS3 = async (file, fileName, contentType = "image/*") => {
       // ResponseContentType:"image"
     };
 
-    const resp = await axios.post(`http://localhost:3000/upload`, uploadData);
+    const resp = await axios.post(`${import.meta.env.VITE_REACT_APP_BASE_URL}/upload`, uploadData);
     const s3url = resp.data.data.url;
 
     if (s3url) {

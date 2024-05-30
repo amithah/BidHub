@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { loginAsync } from "./feature/auth/authSlice";
+import { loginAsync, registerAsync } from "./feature/auth/authSlice";
 import { useNavigate } from "react-router-dom";
 import Loader from "./ui/Loader";
 
-export function Login() {
-  const {isLoading,error, isAuthenticated } = useSelector((state) => state.auth);
+export function Register() {
+  const { isAuthenticated, error, isLoading } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [email, setEmail] = useState("");
@@ -19,7 +19,7 @@ export function Login() {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    dispatch(loginAsync({ "username": email, password }));
+    dispatch(registerAsync({ "email": email, password }));
   };
   return (
     <>
@@ -32,7 +32,7 @@ export function Login() {
               alt="Your Company"
             />
             <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-              Sign in to your account
+             Create an account
             </h2>
           </div>
 
@@ -95,20 +95,18 @@ export function Login() {
                   type="submit"
                   className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 >
-                    {isLoading ? (
-        "Loading"
-          ) :"Sign in"}
+                 {isLoading?"Loading":"Sign in"}
                 </button>
               </div>
             </form>
             {error && <p style={{ color: 'red' }}>{error}</p>}
             <p className="mt-10 text-center text-sm text-gray-500">
-              Not a member?{" "}
+              Already a member?{" "}
               <a
-                href="/register"
+                href="/login"
                 className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
               >
-                Sign Up
+                Login
               </a>
             </p>
           </div>

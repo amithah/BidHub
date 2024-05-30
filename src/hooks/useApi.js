@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const useApi = (baseUrl = "http://localhost:3000") => {
+// eslint-disable-next-line no-undef
+const useApi = (baseUrl = import.meta.env.VITE_REACT_APP_BASE_URL) => {
   const fetchDataWithHeaders = async (url,data, options = {}) => {
     return await axios({
       url: baseUrl + url,
