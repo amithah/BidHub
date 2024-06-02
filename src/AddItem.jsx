@@ -1,10 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addItem, uploadToS3 } from "./feature/item/itemSlice";
 import { useNavigate } from "react-router-dom";
+import Spinner from "./ui/Spinner";
 
 export function AddItem() {
-  const { item, isLoading } = useSelector((state) => state?.items);
+  const { item } = useSelector((state) => state?.items);
+  const [showSpinner, setShowSpinner] = useState(false);
+
+  
   const { user } = useSelector((state) => state.auth);
   const [name, setName] = useState("");
   const [image, setImage] = useState("");
@@ -12,6 +16,12 @@ export function AddItem() {
   const [desc, setDesc] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user) {
+      navigate("/");
+    }
+  }, [user,navigate]); 
 
   const handleAddItem = async (e) => {
     e.preventDefault();
@@ -21,7 +31,7 @@ export function AddItem() {
       addedBy: user?._id,
       images: [image],
     };
-
+setShowSpinner(true)
     await uploadToS3(file, file.name);
     dispatch(addItem(data));
     resetForm();
@@ -119,7 +129,7 @@ export function AddItem() {
               className="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               type="submit"
             >
-              {isLoading ? "Loading..." : "Add Item"}
+              {showSpinner ? <Spinner /> : "Add Item"}
             </button>
           </div>
         </form>

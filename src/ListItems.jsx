@@ -5,6 +5,7 @@ import Modal from "./ui/Modal";
 
 export function ListItems() {
   const { loading, items } = useSelector((state) => state?.items);
+  const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
 
@@ -26,7 +27,7 @@ export function ListItems() {
               <div key={item._id} className="group relative">
                 <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">
                   <img
-                    src={`https://bidhub.s3.us-east-1.amazonaws.com/${item?.images[0]}`}
+                    src={`https://bidhub.s3.us-east-1.amazonaws.com/${item?.images?.[0]}`}
                     alt={item.name}
                     className="h-full w-full object-cover object-center lg:h-full lg:w-full"
                   />
@@ -45,9 +46,9 @@ export function ListItems() {
                     {item?.price}
                   </p>
                 </div>
-                {!item?.status ? (
+                {!item?.status && user&& item?.addedBy ===user?._id? (
                   <div
-                    className="absolute top-2 right-2 cursor-pointer"
+                    className="absolute top-0 right-0 cursor-pointer p-2 bg-indigo-600 text-white rounded-md"
                     onClick={() => {
                       dispatch(setItem(item));
                       setOpen(true);

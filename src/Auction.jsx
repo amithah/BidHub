@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAuction, setAuction } from "./feature/auction/auctionSlice";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Timer from "./ui/Timer";
 import { addBid } from "./feature/bid/bidSlice";
 import Loader from "./ui/Loader";
@@ -9,13 +9,14 @@ import Loader from "./ui/Loader";
 export function Auction() {
   const { id } = useParams();
   const dispatch = useDispatch();
+  const navigate =useNavigate();
   const { user } = useSelector((state) => state.auth);
 
   const { isLoading, auction } = useSelector((state) => state?.auctions);
   const [ws, setWs] = useState(null);
   const [currentBid, setCurrentBid] = useState(""); // State to track the current bid value
   const [bidList, setBidList] = useState([]); // State to store the list of bids
-  console.log(bidList);
+
   useEffect(() => {
     dispatch(fetchAuction(id));
     const socket = new WebSocket(`ws://${import.meta.env.VITE_REACT_APP_URL}/${id}`);
@@ -121,11 +122,13 @@ export function Auction() {
               <div className="grid grid-cols-2 gap-4 mt-2">
                 <div key={auction?._id} className="group relative w-1/2">
                   <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">
+                    {auction?.item?.images?.[0] &&
                     <img
-                      src={`https://bidhub.s3.us-east-1.amazonaws.com/${auction?.item?.images[0]}`}
+                      src={`https://bidhub.s3.us-east-1.amazonaws.com/${auction?.item?.images?.[0]}`}
                       alt={auction?.item?.name}
                       className="h-full w-full object-cover object-center lg:h-full lg:w-full"
                     />
+}
                   </div>
                   <div className="mt-4 flex justify-between">
                     <div>
@@ -161,11 +164,19 @@ export function Auction() {
                               className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                             />
                             <button
+                            disabled={!user}
                               onClick={submitBid}
                               className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                             >
                               Submit
                             </button>
+                            {           !user&&    <button
+                        
+                              onClick={navigate("/")}
+                              className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            >
+                              Login
+                            </button>}
                           </div>
                         </div>
                       </>
@@ -173,11 +184,11 @@ export function Auction() {
                   {/* Display bid list */}
 
                   <div className="col-span-full mb-6">
-                    <h3 className="text-xl font-semibold mb-2">Bid List</h3>
+                    <h3 className="text-xl font-semibold mb-2">{bidList?.length===0?"No bids" :"Bid List"}</h3>
                     <ul className="divide-y divide-gray-200">
                       {bidList?.map((bid, index) => (
                         <li key={index} className="py-2">
-                          Bid: AED {bid?.amount} -Bidder: {bid?.addedBy?.email}
+                          Bid: AED {bid?.amount} -Bidder: {bid?.addedBy?.name}
                         </li>
                       ))}
                     </ul>

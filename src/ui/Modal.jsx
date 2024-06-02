@@ -6,7 +6,6 @@ import { listItems } from "../feature/item/itemSlice";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import moment from "moment";
 import { useNavigate } from "react-router-dom";
 
 export default function Modal({ open, setOpen }) {
@@ -142,7 +141,7 @@ export default function Modal({ open, setOpen }) {
                           htmlFor="reservePrice"
                           className="block text-sm font-medium text-gray-700"
                         >
-                          Reserve Price (AED)
+                          Reserve Price (AED)<span className="text-sm" >{`( Minimium amount that a seller will accept as the winning bid)`}</span>
                         </label>
                         <input
                         required

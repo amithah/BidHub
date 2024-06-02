@@ -44,6 +44,16 @@ const auctionSlice = createSlice({
     fetchAuctionFailure: (state) => {
       state.isLoading = false;
     },
+    auctionUpdateStart: (state) => {
+      state.isLoading = true;
+    },
+    auctionUpdateSuccess: (state, action) => {
+      state.isLoading = false;
+      state.auction = action.payload.data;
+    },
+    auctionUpdateFailure: (state) => {
+      state.isLoading = false;
+    },
   },
 });
 
@@ -58,6 +68,9 @@ export const {
   fetchAuctionStart,
   fetchAuctionSuccess,
   fetchAuctionFailure,
+  auctionUpdateStart,
+  auctionUpdateSuccess,
+  auctionUpdateFailure,
 } = auctionSlice.actions;
 
 export const addAuction = (data) => async (dispatch) => {
@@ -102,6 +115,21 @@ export const fetchAuction = (id) => async (dispatch) => {
     dispatch(fetchAuctionSuccess(auction));
   } catch (err) {
     dispatch(fetchAuctionFailure());
+    console.log(err);
+  }
+};
+export const updateAuction = (id, data) => async (dispatch) => {
+  const { fetchDataWithHeaders } = useApi();
+  try {
+    dispatch(auctionUpdateStart());
+    const auction = await fetchDataWithHeaders(`/auction/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    dispatch(auctionUpdateSuccess(auction));
+  } catch (err) {
+    dispatch(auctionUpdateFailure());
     console.log(err);
   }
 };
