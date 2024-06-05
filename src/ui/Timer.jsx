@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { updateAuction } from "../feature/auction/auctionSlice";
 
 function Timer({ auction }) {
+  const dispatch =useDispatch();
   const [timeUntilStart, setTimeUntilStart] = useState(null);
   const [countdown, setCountdown] = useState(null);
 
@@ -18,6 +21,8 @@ function Timer({ auction }) {
         let remainingTime = endTime - currentTime;
         if (remainingTime <= 0) {
           remainingTime = 0; // Ensure we do not display negative time
+          dispatch(updateAuction({"status":"Finished"}))
+          
           // Optionally, you can add any additional logic here, like stopping the auction
         }
         setCountdown(remainingTime);
