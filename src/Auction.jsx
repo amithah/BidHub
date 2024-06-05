@@ -19,7 +19,7 @@ export function Auction() {
 
   useEffect(() => {
     dispatch(fetchAuction(id));
-    const socket = new WebSocket(`wss://${import.meta.env.VITE_REACT_APP_URL}/${id}`);
+    const socket = new WebSocket(`ws://${import.meta.env.VITE_REACT_APP_URL}/${id}`);
     setWs(socket);
 
     socket.onopen = function () {
