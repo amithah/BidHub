@@ -21,41 +21,40 @@ export function Auction() {
   useEffect(() => {
     // Fetch auction details when component mounts
     dispatch(fetchAuction(id));
-
-    // Initialize socket connection when component mounts
+  
+    // Initialize socket connection with optional chaining
     const newSocket = io(import.meta.env.VITE_REACT_APP_URL, {
       query: { roomId: id },
     });
     setSocket(newSocket);
-
+  
     // Event listeners for socket events
     newSocket.on("connect", () => {
       console.log("Socket.io connected");
     });
-
+  
     newSocket.on("previousBids", (data) => {
       console.log("Received previous bids:", data);
       setBidList(data.map((bid) => bid)); // Update bid list with previous bids
     });
-
-    newSocket.on("bid", (bid) => {
-      console.log("Received new bid:", bid);
-      setBidList((prevBidList) => [...prevBidList, bid]); // Add new bid to bid list
-    });
-
+  
+    // Improved efficiency with separate function (optional)
+    const updateBidList = (bid) => {
+      setBidList((prevBidList) => [...prevBidList, bid]);
+    };
+    newSocket.on("bid", updateBidList);
+  
     newSocket.on("disconnect", () => {
       console.log("Socket.io disconnected");
     });
-
-    // Clean-up function to disconnect socket when component unmounts
+  
+    // Clean-up function with optional chaining
     return () => {
-      if (socket) {
-        socket.disconnect();
-      }
-      dispatch(setAuction(null)); // Reset auction state
+      socket?.disconnect();
+      dispatch(setAuction(null));
     };
-  }, [id, dispatch]); // Dependency array ensures useEffect runs only when id or dispatch changes
-
+  }, [id, dispatch]);
+  
   const submitBid = () => {
     if (socket && currentBid !== "") {
       const bidData = {
