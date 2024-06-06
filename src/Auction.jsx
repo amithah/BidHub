@@ -6,7 +6,6 @@ import Timer from "./ui/Timer";
 import { addBid } from "./feature/bid/bidSlice";
 import Loader from "./ui/Loader";
 import { io } from "socket.io-client";
-import { useSocket } from "./hooks/useSocket";
 
 export function Auction() {
   const { id } = useParams();
@@ -15,39 +14,47 @@ export function Auction() {
   const { user } = useSelector((state) => state.auth);
 
   const { isLoading, auction } = useSelector((state) => state?.auctions);
-  const [currentBid, setCurrentBid] = useState(""); // State to track the current bid value
-  const [bidList, setBidList] = useState([]); // State to store the list of bids
-  const socket = useSocket(); // Custom hook or any other way you are managing the socket instance
+  const [socket, setSocket] = useState(null);
+  const [currentBid, setCurrentBid] = useState("");
+  const [bidList, setBidList] = useState([]);
 
   useEffect(() => {
+    // Fetch auction details when component mounts
     dispatch(fetchAuction(id));
 
-    const socket = io(import.meta.env.VITE_REACT_APP_URL, {
+    // Initialize socket connection when component mounts
+    const newSocket = io(import.meta.env.VITE_REACT_APP_URL, {
       query: { roomId: id },
     });
+    setSocket(newSocket);
 
-    socket.on("connect", () => {
+    // Event listeners for socket events
+    newSocket.on("connect", () => {
       console.log("Socket.io connected");
     });
 
-    socket.on("previousBids", (data) => {
-      console.log(data)
-      setBidList(data?.map((bid) => bid));
+    newSocket.on("previousBids", (data) => {
+      console.log("Received previous bids:", data);
+      setBidList(data.map((bid) => bid)); // Update bid list with previous bids
     });
 
-    socket.on("bid", (bid) => {
-      setBidList((prevBidList) => [...prevBidList, bid]);
+    newSocket.on("bid", (bid) => {
+      console.log("Received new bid:", bid);
+      setBidList((prevBidList) => [...prevBidList, bid]); // Add new bid to bid list
     });
 
-    socket.on("disconnect", () => {
+    newSocket.on("disconnect", () => {
       console.log("Socket.io disconnected");
     });
 
+    // Clean-up function to disconnect socket when component unmounts
     return () => {
-      socket.disconnect();
-      dispatch(setAuction(null));
+      if (socket) {
+        socket.disconnect();
+      }
+      dispatch(setAuction(null)); // Reset auction state
     };
-  }, [id, dispatch]);
+  }, [id, dispatch]); // Dependency array ensures useEffect runs only when id or dispatch changes
 
   const submitBid = () => {
     if (socket && currentBid !== "") {
