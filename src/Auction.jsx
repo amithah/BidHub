@@ -24,6 +24,7 @@ export function Auction() {
   
     // Initialize socket connection with optional chaining
     const newSocket = io(import.meta.env.VITE_REACT_APP_URL, {
+      transports: ['websocket'],
       query: { roomId: id },
     });
     setSocket(newSocket);
