@@ -12,7 +12,6 @@ export function Auction() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
-
   const { isLoading, auction } = useSelector((state) => state?.auctions);
   const [socket, setSocket] = useState(null);
   const [currentBid, setCurrentBid] = useState("");
@@ -21,41 +20,42 @@ export function Auction() {
   useEffect(() => {
     // Fetch auction details when component mounts
     dispatch(fetchAuction(id));
-  
-    // Initialize socket connection with optional chaining
+
+    // Initialize socket connection
     const newSocket = io(import.meta.env.VITE_REACT_APP_URL, {
       query: { roomId: id },
     });
     setSocket(newSocket);
-  
+
     // Event listeners for socket events
     newSocket.on("connect", () => {
       console.log("Socket.io connected");
     });
-  
+
     newSocket.on("previousBids", (data) => {
       console.log("Received previous bids:", data);
-      setBidList(data.map((bid) => bid)); // Update bid list with previous bids
+      setBidList(data);
     });
-  
-    // Improved efficiency with separate function (optional)
+
     const updateBidList = (bid) => {
-      setBidList((prevBidList) => [...prevBidList, bid]);
+      console.log(bid?.value);
+      setBidList((prevBidList) => [bid?.value, ...prevBidList]);
     };
-    newSocket.on("bid", updateBidList);
-  
+    newSocket.on("message", updateBidList);
+
     newSocket.on("disconnect", () => {
       console.log("Socket.io disconnected");
     });
-  
-    // Clean-up function with optional chaining
+
+    // Clean-up function
     return () => {
-      socket?.disconnect();
+      newSocket.disconnect();
       dispatch(setAuction(null));
     };
   }, [id, dispatch]);
-  
-  const submitBid = () => {
+
+  const submitBid = (e) => {
+    e.preventDefault();
     if (socket && currentBid !== "") {
       const bidData = {
         type: "bid",
@@ -81,115 +81,115 @@ export function Auction() {
   };
 
   return (
-    <>
-      <div className="bg-white">
-        <div className="mx-auto max-w-2xl px-4 py-4 sm:px-6 sm:py-12 lg:max-w-7xl lg:px-8">
-          <h2 className="text-3xl mb-4 font-bold tracking-tight text-gray-900">
-            Auction Details
-          </h2>
+    <div className="bg-gray-50 min-h-screen">
+      <div className="container mx-auto py-8">
+        <h2 className="text-3xl font-bold text-center text-gray-900 mb-6">
+          Auction Details
+        </h2>
+        <div className="bg-white p-6 rounded-lg shadow-md">
           {isLoading ? (
             <Loader />
           ) : (
             <>
-              {auction?.status}
+              <div className="flex justify-between items-center mb-4">
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-800">
+                    {auction?.item?.name}
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Duration: {auction?.duration / 60000} Minutes
+                  </p>
+                </div>
+                <p className="text-lg font-medium text-gray-900">
+                  Starting Price: AED {auction?.price}
+                </p>
+              </div>
+
+              {auction?.status !== "Finished" && <Timer auction={auction} />}
+              <p className="text-sm text-gray-700 mb-2">
+                Status: {auction?.status}
+              </p>
               {auction?.bids?.length > 0 ? (
-                <p className="text-gray-500 mb-4">
+                <p className="text-gray-700 mb-4">
                   Highest Bid: AED {auction?.bids[0]?.amount}
                 </p>
               ) : (
-                <p className="text-gray-500 mb-4">No bids yet</p>
+                <p className="text-gray-700 mb-4">No bids yet</p>
               )}
-              <p className="text-gray-500 mb-4">
+              <p className="text-gray-700 mb-4">
                 Created By: {auction?.createdBy?.name}
               </p>
-              <p className="text-gray-500 mb-4">
+              <p className="text-gray-700 mb-4">
                 Created At: {new Date(auction?.createdAt).toLocaleString()}
               </p>
-              {auction?.status !== "Finished" && <Timer auction={auction} />}
-              <div className="grid grid-cols-2 gap-4 mt-2">
-                <div key={auction?._id} className="group relative w-1/2">
-                  <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                <div className="group relative">
+                  <div className="aspect-w-16 aspect-h-9 w-full overflow-hidden rounded-md bg-gray-200">
                     {auction?.item?.images?.[0] && (
                       <img
                         src={`https://bidhub.s3.us-east-1.amazonaws.com/${auction?.item?.images?.[0]}`}
                         alt={auction?.item?.name}
-                        className="h-full w-full object-cover object-center lg:h-full lg:w-full"
+                        className="h-full w-full object-cover object-center"
                       />
                     )}
                   </div>
-                  <div className="mt-4 flex justify-between">
+                </div>
+                {auction?.status !== "Finished" &&
+                  auction?.createdBy?._id !== user?._id &&
+                  auction?.status === "Ongoing" && (
                     <div>
-                      <h3 className="text-sm text-gray-700">
-                        <span aria-hidden="true" className="absolute inset-0" />
-                        {auction?.item?.name}
-                      </h3>
-                      <p className="mt-1 text-sm text-gray-500">
-                        {auction?.duration / 60000} Minutes
-                      </p>
-                    </div>
-                    <p className="text-sm font-medium text-gray-900">
-                      AED {auction?.price}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
-                  {auction?.status !== "Finished" &&
-                    auction?.createdBy?._id !== user?._id &&
-                    auction?.status === "Ongoing" && (
-                      <>
-                        {/* Input field for bidding */}
-                        <div className="col-span-full">
-                          <h3 className="text-xl font-semibold mb-2">
-                            Submit Bid
-                          </h3>
-                          <div className="flex gap-4">
-                            <input
-                              type="text"
-                              value={currentBid}
-                              onChange={(e) => setCurrentBid(e.target.value)}
-                              placeholder="Enter your bid"
-                              className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            />
-                            <button
-                              disabled={!user}
-                              onClick={submitBid}
-                              className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            >
-                              Submit
-                            </button>
-                            {!user && (
-                              <button
-                                onClick={navigate("/")}
-                                className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                              >
-                                Login
-                              </button>
-                            )}
-                          </div>
+                      <h3 className="text-xl font-semibold mb-4">Submit Bid</h3>
+                      <form onSubmit={submitBid} className="flex gap-4">
+                        <input
+                          type="number"
+                          value={currentBid}
+                          onChange={(e) => setCurrentBid(e.target.value)}
+                          placeholder="Enter your bid"
+                          className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                          required
+                          min={auction?.bids?.[0]?.amount + 1 || auction?.price + 1}
+                        />
+                        <button
+                          type="submit"
+                          disabled={!user}
+                          className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
+                        >
+                          Submit
+                        </button>
+                      </form>
+                      {!user && (
+                        <div className="mt-4">
+                          <button
+                            onClick={() => navigate("/")}
+                            className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                          >
+                            Login
+                          </button>
                         </div>
-                      </>
-                    )}
-                  {/* Display bid list */}
+                      )}
+                    </div>
+                  )}
+              </div>
 
-                  <div className="col-span-full mb-6">
-                    <h3 className="text-xl font-semibold mb-2">
-                      {bidList?.length === 0 ? "No bids" : "Bid List"}
-                    </h3>
-                    <ul className="divide-y divide-gray-200">
-                      {bidList?.map((bid, index) => (
-                        <li key={index} className="py-2">
-                          Bid: AED {bid?.amount} -Bidder: {bid?.addedBy?.name}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
+              <div className="mt-8">
+                <h3 className="text-xl font-semibold mb-4">
+                  {bidList?.length === 0 ? "No bids" : "Bid List"}
+                </h3>
+                <ul className="divide-y divide-gray-200">
+                  {bidList?.map((bid, index) => (
+                    <li key={index} className="py-4">
+                      <p className="text-gray-700">
+                        Bid: AED {bid?.amount} - Bidder: {bid?.addedBy?.name}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </>
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 }

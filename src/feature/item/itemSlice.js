@@ -57,6 +57,7 @@ export const addItem = (data) => async (dispatch) => {
       headers: { "Content-Type": "application/json" },
     });
     dispatch(addItemSuccess(item));
+    dispatch(listItems());
   } catch (err) {
     dispatch(addItemFailure());
     console.log(err);
