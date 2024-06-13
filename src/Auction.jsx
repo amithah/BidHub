@@ -16,7 +16,40 @@ export function Auction() {
   const [socket, setSocket] = useState(null);
   const [currentBid, setCurrentBid] = useState("");
   const [bidList, setBidList] = useState([]);
+  const [timeUntilStart, setTimeUntilStart] = useState(null);
+  const [countdown, setCountdown] = useState(null);
 
+  useEffect(() => {
+    const calculateTimeLeft = () => {
+      const currentTime = new Date().getTime();
+      const startTime = new Date(auction?.startTime).getTime();
+
+      if (startTime > currentTime) {
+        const difference = startTime - currentTime;
+        setTimeUntilStart(difference);
+        setCountdown(null);
+      }  else {
+        const endTime = startTime + auction?.duration;
+        let remainingTime = endTime - currentTime;
+        if (remainingTime <= 0) {
+          remainingTime = null; // Ensure we do not display negative time
+          // dispatch(updateAuction(auction?.id, { status: "Finished" }));
+
+          // Optionally, you can add any additional logic here, like stopping the auction
+        }
+        setCountdown(remainingTime);
+        setTimeUntilStart(null);
+      }
+    };
+
+    calculateTimeLeft();
+
+    const timer = setInterval(() => {
+      calculateTimeLeft();
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [auction]);
   useEffect(() => {
     // Fetch auction details when component mounts
     dispatch(fetchAuction(id));
@@ -29,22 +62,22 @@ export function Auction() {
 
     // Event listeners for socket events
     newSocket.on("connect", () => {
-      console.log("Socket.io connected");
+      // console.log("Socket.io connected");
     });
 
     newSocket.on("previousBids", (data) => {
-      console.log("Received previous bids:", data);
+      // console.log("Received previous bids:", data);
       setBidList(data);
     });
 
     const updateBidList = (bid) => {
-      console.log(bid?.value);
+      // console.log(bid?.value);
       setBidList((prevBidList) => [bid?.value, ...prevBidList]);
     };
     newSocket.on("message", updateBidList);
 
     newSocket.on("disconnect", () => {
-      console.log("Socket.io disconnected");
+      // console.log("Socket.io disconnected");
     });
 
     // Clean-up function
@@ -106,9 +139,9 @@ export function Auction() {
               </div>
 
               {auction?.status !== "Finished" && <Timer auction={auction} />}
-              <p className="text-sm text-gray-700 mb-2">
+              {/* <p className="text-sm text-gray-700 mb-2">
                 Status: {auction?.status}
-              </p>
+              </p> */}
               {auction?.bids?.length > 0 ? (
                 <p className="text-gray-700 mb-4">
                   Highest Bid: AED {auction?.bids[0]?.amount}
@@ -124,6 +157,7 @@ export function Auction() {
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+    
                 <div className="group relative">
                   <div className="aspect-w-16 aspect-h-9 w-full overflow-hidden rounded-md bg-gray-200">
                     {auction?.item?.images?.[0] && (
@@ -135,9 +169,10 @@ export function Auction() {
                     )}
                   </div>
                 </div>
+                <div className="flex flex-col gap-2">
                 {auction?.status !== "Finished" &&
                   auction?.createdBy?._id !== user?._id &&
-                  auction?.status === "Ongoing" && (
+                  !timeUntilStart && countdown !==null &&(
                     <div>
                       <h3 className="text-xl font-semibold mb-4">Submit Bid</h3>
                       <form onSubmit={submitBid} className="flex gap-4">
@@ -146,9 +181,11 @@ export function Auction() {
                           value={currentBid}
                           onChange={(e) => setCurrentBid(e.target.value)}
                           placeholder="Enter your bid"
-                          className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                          className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                           required
+                          max={ auction?.price + 1000}
                           min={auction?.bids?.[0]?.amount + 1 || auction?.price + 1}
+                  
                         />
                         <button
                           type="submit"
@@ -170,22 +207,32 @@ export function Auction() {
                       )}
                     </div>
                   )}
-              </div>
-
-              <div className="mt-8">
+                <div className="p-8 bg-gray-100 rounded-md">
                 <h3 className="text-xl font-semibold mb-4">
                   {bidList?.length === 0 ? "No bids" : "Bid List"}
                 </h3>
                 <ul className="divide-y divide-gray-200">
                   {bidList?.map((bid, index) => (
                     <li key={index} className="py-4">
-                      <p className="text-gray-700">
-                        Bid: AED {bid?.amount} - Bidder: {bid?.addedBy?.name}
-                      </p>
+                      <div className="flex flex-row gap-2">
+                      <div className="bg-indigo-600 text-white px-4 py-2 rounded-md">
+                      <p className="text-white">
+                         AED {bid?.amount}
+                      </p>                    
+                      </div>
+                      <div className="bg-gray-300 text-black px-4 py-2 rounded-md">
+                     {bid?.addedBy?.name}
+                      </div>
+                      </div>
                     </li>
                   ))}
                 </ul>
+                </div>
               </div>
+             
+              </div>
+
+
             </>
           )}
         </div>

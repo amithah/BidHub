@@ -47,6 +47,20 @@ function Timer({ auction }) {
     return (
       <>
         <div className="flex items-start justify-center w-full gap-4 count-down-main">
+        <div className="timer w-16">
+            <div className=" bg-indigo-600 py-4 px-2 rounded-lg overflow-hidden">
+              <h3 className="countdown-element minutes font-Cormorant font-semibold text-2xl text-white text-center">
+                {hours > 0 ? hours : "0"}
+              </h3>
+            </div>
+            <p className="text-lg font-Cormorant font-normal text-gray-900 mt-1 text-center w-full">
+              {" "}
+              Hours
+            </p>
+          </div>
+          <h3 className="font-manrope font-semibold text-2xl text-gray-900">
+            :
+          </h3>
           <div className="timer w-16">
             <div className=" bg-indigo-600 py-4 px-2 rounded-lg overflow-hidden">
               <h3 className="countdown-element minutes font-Cormorant font-semibold text-2xl text-white text-center">
@@ -55,7 +69,7 @@ function Timer({ auction }) {
             </div>
             <p className="text-lg font-Cormorant font-normal text-gray-900 mt-1 text-center w-full">
               {" "}
-              minutes
+              Minutes
             </p>
           </div>
           <h3 className="font-manrope font-semibold text-2xl text-gray-900">
@@ -68,7 +82,7 @@ function Timer({ auction }) {
               </h3>
             </div>
             <p className="text-lg font-Cormorant font-normal text-gray-900 mt-1 text-center w-full">
-              seconds
+              Seconds
             </p>
           </div>
         </div>
